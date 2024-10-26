@@ -26,18 +26,18 @@ variable "environment" {
   default     = "Dev"
 }
 
-# Public Subnet CIDR
-variable "public_subnet_cidr" {
-  description = "The CIDR block for the public subnet"
-  type        = string
-  default     = "10.0.1.0/24"
+# Public Subnets CIDR Blocks
+variable "public_subnet_cidrs" {
+  description = "A list of CIDR blocks for the public subnets"
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
 
-# Availability Zone
-variable "availability_zone" {
-  description = "The availability zone for the public subnet"
-  type        = string
-  default     = "us-east-1a"
+# Availability Zones
+variable "availability_zones" {
+  description = "A list of availability zones for the subnets"
+  type        = list(string)
+  default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
 
 # Project Label (e.g., gmedeiros)

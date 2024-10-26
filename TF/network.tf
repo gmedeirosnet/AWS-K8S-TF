@@ -11,15 +11,16 @@ resource "aws_vpc" "main" {
   }
 }
 
-# Public Subnet
-resource "aws_subnet" "public_subnet" {
+# Create Public Subnets in Multiple Availability Zones
+resource "aws_subnet" "public_subnets" {
+  count                   = length(var.public_subnet_cidrs)
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnet_cidr
-  availability_zone       = var.availability_zone
+  cidr_block              = element(var.public_subnet_cidrs, count.index)
+  availability_zone       = element(var.availability_zones, count.index)
   map_public_ip_on_launch = true
 
   tags = {
-    Name    = "${var.vpc_name}-public-subnet"
+    Name    = "${var.vpc_name}-public-subnet-${count.index + 1}"
     Project = var.project_label # Include the gmedeiros label
   }
 }
@@ -34,7 +35,7 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-# Route Table for Public Subnet
+# Route Table for Public Subnets
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.main.id
 
@@ -49,8 +50,9 @@ resource "aws_route_table" "public_rt" {
   }
 }
 
-# Associate Route Table with Public Subnet
+# Associate Route Table with Public Subnets
 resource "aws_route_table_association" "public_rt_assoc" {
-  subnet_id      = aws_subnet.public_subnet.id
+  count          = length(var.public_subnet_cidrs)
+  subnet_id      = element(aws_subnet.public_subnets[*].id, count.index)
   route_table_id = aws_route_table.public_rt.id
 }
