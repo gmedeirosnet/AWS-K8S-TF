@@ -1,13 +1,13 @@
 # VPC Resource
 resource "aws_vpc" "main" {
-  cidr_block             = var.vpc_cidr
-  enable_dns_support     = true
-  enable_dns_hostnames   = true
+  cidr_block           = var.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
   tags = {
     Name        = var.vpc_name
     Environment = var.environment
-    Project     = var.project_label   # Include the gmedeiros label
+    Project     = var.project_label # Include the gmedeiros label
   }
 }
 
@@ -20,7 +20,7 @@ resource "aws_subnet" "public_subnet" {
 
   tags = {
     Name    = "${var.vpc_name}-public-subnet"
-    Project = var.project_label        # Include the gmedeiros label
+    Project = var.project_label # Include the gmedeiros label
   }
 }
 
@@ -30,7 +30,7 @@ resource "aws_internet_gateway" "igw" {
 
   tags = {
     Name    = "${var.vpc_name}-internet-gateway"
-    Project = var.project_label        # Include the gmedeiros label
+    Project = var.project_label # Include the gmedeiros label
   }
 }
 
@@ -45,7 +45,7 @@ resource "aws_route_table" "public_rt" {
 
   tags = {
     Name    = "${var.vpc_name}-public-route-table"
-    Project = var.project_label        # Include the gmedeiros label
+    Project = var.project_label # Include the gmedeiros label
   }
 }
 
