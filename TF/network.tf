@@ -25,6 +25,19 @@ resource "aws_subnet" "public_subnets" {
   }
 }
 
+# Create Private Subnets in Multiple Availability Zones
+resource "aws_subnet" "private_subnets" {
+  count             = length(var.private_subnet_cidrs)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = element(var.private_subnet_cidrs, count.index)
+  availability_zone = element(var.availability_zones, count.index)
+
+  tags = {
+    Name    = "${var.vpc_name}-private-subnet-${count.index + 1}"
+    Project = var.project_label # Include the gmedeiros label
+  }
+}
+
 # Internet Gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
@@ -55,4 +68,21 @@ resource "aws_route_table_association" "public_rt_assoc" {
   count          = length(var.public_subnet_cidrs)
   subnet_id      = element(aws_subnet.public_subnets[*].id, count.index)
   route_table_id = aws_route_table.public_rt.id
+}
+
+# Route Table for Private Subnets (No Internet Access)
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name    = "${var.vpc_name}-private-route-table"
+    Project = var.project_label # Include the gmedeiros label
+  }
+}
+
+# Associate Route Table with Private Subnets
+resource "aws_route_table_association" "private_rt_assoc" {
+  count          = length(var.private_subnet_cidrs)
+  subnet_id      = element(aws_subnet.private_subnets[*].id, count.index)
+  route_table_id = aws_route_table.private_rt.id
 }
